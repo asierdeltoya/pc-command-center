@@ -1,0 +1,81 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:PCCommandCenter.App.Controls"
+                    xmlns:vm="clr-namespace:PCCommandCenter.App.ViewModels"
+                    xmlns:v="clr-namespace:PCCommandCenter.App.Views"
+                    xmlns:l="clr-namespace:PCCommandCenter.App.Localization">
+
+    <!-- Converters -->
+    <c:VisibleIfConverter x:Key="VisibleIf" />
+    <c:InverseBoolConverter x:Key="Not" />
+    <c:BytesConverter x:Key="Bytes" />
+    <c:StatusBrushConverter x:Key="StatusBrush" />
+    <c:LoadBrushConverter x:Key="LoadBrush" />
+    <c:HeatBrushConverter x:Key="HeatBrush" />
+    <l:TranslateConverter x:Key="Tr" />
+
+    <!-- Page view models → views -->
+    <DataTemplate DataType="{x:Type vm:DashboardViewModel}"><v:DashboardView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:HealthViewModel}"><v:HealthView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ProcessesViewModel}"><v:ProcessesView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:NetworkViewModel}"><v:NetworkView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:StorageViewModel}"><v:StorageView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:StartupViewModel}"><v:StartupView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:WindowsViewModel}"><v:WindowsView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:LogAnalyzerViewModel}"><v:LogAnalyzerView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AiAssistantViewModel}"><v:AiAssistantView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:TerminalViewModel}"><v:TerminalView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SettingsViewModel}"><v:SettingsView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AboutViewModel}"><v:AboutView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:HistoryViewModel}"><v:HistoryView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SecurityViewModel}"><v:SecurityView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:AppsViewModel}"><v:AppsView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:QuickFixesViewModel}"><v:QuickFixesView /></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SpeedTestViewModel}"><v:SpeedTestView /></DataTemplate>
+
+    <!-- Reusable bits -->
+    <Style x:Key="StatLabel" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+        <Setter Property="Margin" Value="0,0,0,3" />
+    </Style>
+    <Style x:Key="StatValue" TargetType="TextBlock" BasedOn="{StaticResource Text.Base}">
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Status pill: Tag = status object, Content = text -->
+    <Style x:Key="StatusPill" TargetType="ContentControl">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Border CornerRadius="999" Padding="9,2.5" Background="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusBrush}, ConverterParameter=soft}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="6" Height="6" Margin="0,0,6,0" VerticalAlignment="Center"
+                                     Fill="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusBrush}}" />
+                            <ContentPresenter TextElement.FontSize="11" TextElement.FontWeight="SemiBold" VerticalAlignment="Center"
+                                              TextElement.Foreground="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StatusBrush}}" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Empty / loading state -->
+    <Style x:Key="EmptyState" TargetType="ContentControl">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <StackPanel HorizontalAlignment="Center" Margin="24">
+                        <Border Width="56" Height="56" CornerRadius="16" Background="{DynamicResource Brush.AccentSoft}" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding (c:Ui.Glyph), RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource Icon}" FontSize="24" Foreground="{DynamicResource Brush.Accent}" />
+                        </Border>
+                        <ContentPresenter Margin="0,14,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

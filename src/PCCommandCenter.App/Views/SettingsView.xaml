@@ -1,0 +1,254 @@
+﻿<UserControl x:Class="PCCommandCenter.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:PCCommandCenter.App.Controls"
+             xmlns:l="clr-namespace:PCCommandCenter.App.Localization"
+             xmlns:vm="clr-namespace:PCCommandCenter.App.ViewModels">
+    <UserControl.Resources>
+        <!-- A settings row: Tag = description, Content = control on the right -->
+        <Style x:Key="Row" TargetType="HeaderedContentControl">
+            <Setter Property="Margin" Value="0,0,0,2" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="HeaderedContentControl">
+                        <Border Padding="0,12" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+                            <DockPanel>
+                                <ContentPresenter DockPanel.Dock="Right" VerticalAlignment="Center" Margin="24,0,0,0" />
+                                <StackPanel VerticalAlignment="Center">
+                                    <ContentPresenter ContentSource="Header" TextElement.FontWeight="SemiBold" TextElement.FontSize="13" />
+                                    <TextBlock Text="{TemplateBinding Tag}" Style="{StaticResource Text.Caption}" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap" TextTrimming="None" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="Section" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Padding" Value="22,16" />
+        </Style>
+        <Style x:Key="SectionTitle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="28,4,28,28" MaxWidth="980" HorizontalAlignment="Left">
+            <c:AdaptiveGrid MinColumnWidth="440" MaxColumns="2" Gap="16">
+                <!-- Appearance -->
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <StackPanel Style="{StaticResource SectionTitle}">
+                            <TextBlock Text="&#xE790;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T 'Appearance'}" Style="{StaticResource Text.H2}" />
+                        </StackPanel>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Language'}" Tag="{l:T 'Interface language'}">
+                            <ComboBox Width="180" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Theme'}" Tag="{l:T 'Dark is the default; light and system themes are available'}">
+                            <ComboBox Width="180" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Accent color'}" Tag="{l:T 'Used for highlights, charts and buttons'}">
+                            <ItemsControl ItemsSource="{Binding Accents}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:AccentOption}">
+                                        <Button Width="24" Height="24" Margin="3,0" Cursor="Hand" ToolTip="{Binding Key}"
+                                                Command="{Binding DataContext.SetAccentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Key}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Grid>
+                                                        <Ellipse Fill="{Binding Brush}" />
+                                                        <Ellipse x:Name="Ring" Stroke="{DynamicResource Brush.Text}" StrokeThickness="2" Margin="-3" Opacity="0" />
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Ring" Property="Opacity" Value="0.6" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Temperature unit'}" Tag="{l:T 'Celsius or Fahrenheit'}">
+                            <ComboBox Width="180" ItemsSource="{Binding TemperatureUnits}" SelectedItem="{Binding TemperatureUnit}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Network speed unit'}" Tag="{l:T 'Bits (like your ISP) or bytes (like downloads)'}" BorderThickness="0">
+                            <ComboBox Width="180" ItemsSource="{Binding NetworkUnits}" SelectedItem="{Binding NetworkUnit}" />
+                        </HeaderedContentControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Behavior -->
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <StackPanel Style="{StaticResource SectionTitle}">
+                            <TextBlock Text="&#xE7E8;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T 'Behavior'}" Style="{StaticResource Text.H2}" />
+                        </StackPanel>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Start with Windows'}" Tag="{l:T 'Launch minimized to the notification area when you sign in'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding StartWithWindows}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Minimize to tray on close'}" Tag="{l:T 'Closing the window keeps monitoring in the background'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding MinimizeToTray}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Start minimized'}" Tag="{l:T 'Open hidden in the tray when launched'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding StartMinimized}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Refresh interval'}" Tag="{l:T 'How often live metrics are sampled'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="0.5" Maximum="5" TickFrequency="0.5" IsSnapToTickEnabled="True" Value="{Binding RefreshInterval}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding RefreshInterval, StringFormat={}{0:0.0} s}" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Latency target'}" Tag="{l:T 'Host pinged in the background to measure internet latency'}">
+                            <TextBox Width="180" Text="{Binding LatencyTarget, UpdateSourceTrigger=LostFocus}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Latency probe interval'}" Tag="{l:T 'Seconds between background pings'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="2" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding LatencyInterval}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding LatencyInterval, StringFormat={}{0:0} s}" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Notifications -->
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <StackPanel Style="{StaticResource SectionTitle}">
+                            <TextBlock Text="&#xEA8F;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T 'Notifications'}" Style="{StaticResource Text.H2}" />
+                        </StackPanel>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'In-app notifications'}" Tag="{l:T 'Show alerts as toasts inside the app'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding NotificationsEnabled}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Tray balloons'}" Tag="{l:T 'Show warnings from the tray while the window is hidden'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding TrayBalloons}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'CPU temperature alert'}" Tag="{l:T 'Alert when the thermal zone exceeds this value'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="60" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding CpuTempThreshold}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding CpuTempThreshold, StringFormat={}{0:0} °C}" Width="50" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'GPU temperature alert'}" Tag="{l:T 'Requires GPU sensor support'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="60" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding GpuTempThreshold}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding GpuTempThreshold, StringFormat={}{0:0} °C}" Width="50" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Memory alert'}" Tag="{l:T 'Alert when RAM usage stays above'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="70" Maximum="99" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding RamThreshold}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding RamThreshold, StringFormat={}{0:0}%}" Width="50" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Low disk space alert'}" Tag="{l:T 'Alert when a drive has less free space than'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="2" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DiskFreeThreshold}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding DiskFreeThreshold, StringFormat={}{0:0}%}" Width="50" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Latency alert'}" Tag="{l:T 'Alert when internet latency stays above'}">
+                            <StackPanel Orientation="Horizontal">
+                                <Slider Width="140" Minimum="50" Maximum="500" TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding LatencyThreshold}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding LatencyThreshold, StringFormat={}{0:0} ms}" Width="50" TextAlignment="Right" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- AI -->
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <StackPanel Style="{StaticResource SectionTitle}">
+                            <TextBlock Text="&#xE99A;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T 'AI Assistant'}" Style="{StaticResource Text.H2}" />
+                        </StackPanel>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Anthropic API key'}" Tag="{l:T 'Encrypted with Windows DPAPI for your user account. Never stored in plain text.'}">
+                            <StackPanel Orientation="Horizontal">
+                                <ContentControl Style="{StaticResource StatusPill}" Tag="{Binding HasApiKey}" Margin="0,0,10,0">
+                                    <TextBlock>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="{l:T 'Not set'}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasApiKey}" Value="True">
+                                                        <Setter Property="Text" Value="{l:T 'Saved'}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </ContentControl>
+                                <Button Style="{StaticResource Btn.Ghost}" Padding="8,5" FontSize="12" Content="{l:T 'Remove'}" Command="{Binding RemoveApiKeyCommand}" Visibility="{Binding HasApiKey, Converter={StaticResource VisibleIf}}" />
+                            </StackPanel>
+                        </HeaderedContentControl>
+                        <DockPanel Margin="0,10,0,0">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Primary}" Content="{l:T 'Save key'}" Click="SaveKey_Click" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <PasswordBox x:Name="KeyBox" PasswordChanged="KeyBox_PasswordChanged" Height="36" VerticalAlignment="Center" ToolTip="sk-ant-…" />
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,4">
+                            <Button Style="{StaticResource Btn.Link}" Content="{l:T 'Get an API key'}" Command="{Binding OpenConsoleCommand}" FontSize="12" Margin="0,0,16,0" />
+                            <Button Style="{StaticResource Btn.Link}" Content="{l:T 'Test connection'}" Command="{Binding TestAiCommand}" FontSize="12" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding AiStatus}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,4,0,6" Visibility="{Binding AiStatus, Converter={StaticResource VisibleIf}}" />
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Model'}" Tag="{l:T 'Claude model used for answers'}">
+                            <ComboBox Width="260" ItemsSource="{Binding AiModels}" SelectedItem="{Binding AiModel}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Reasoning effort'}" Tag="{l:T 'Higher effort gives deeper analysis but is slower and costs more'}">
+                            <ComboBox Width="180" ItemsSource="{Binding AiEfforts}" SelectedItem="{Binding AiEffort}" />
+                        </HeaderedContentControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Privacy -->
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <StackPanel Style="{StaticResource SectionTitle}">
+                            <TextBlock Text="&#xE72E;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T 'Privacy'}" Style="{StaticResource Text.H2}" />
+                        </StackPanel>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Attach system data by default'}" Tag="{l:T 'Include live hardware, process and network data with AI questions (can be changed per question)'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding AiIncludeSystemContext}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Include executable paths'}" Tag="{l:T 'Paths can contain your user name and folder names'}">
+                            <CheckBox Style="{StaticResource Toggle}" IsChecked="{Binding AiIncludeProcessPaths}" />
+                        </HeaderedContentControl>
+                        <TextBlock Text="{l:T 'Nothing is sent anywhere unless you ask the AI a question. There is no telemetry.'}" Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Advanced -->
+                <Border Style="{StaticResource Section}">
+                    <StackPanel>
+                        <StackPanel Style="{StaticResource SectionTitle}">
+                            <TextBlock Text="&#xE90F;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                            <TextBlock Text="{l:T 'Advanced'}" Style="{StaticResource Text.H2}" />
+                        </StackPanel>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Application log'}" Tag="{Binding LogFile}">
+                            <Button Style="{StaticResource Btn.Secondary}" Content="{l:T 'Open'}" Command="{Binding OpenLogCommand}" Padding="12,6" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Data folder'}" Tag="{Binding DataFolder}">
+                            <Button Style="{StaticResource Btn.Secondary}" Content="{l:T 'Open'}" Command="{Binding OpenDataFolderCommand}" Padding="12,6" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Administrator mode'}" Tag="{l:T 'Unlocks SMART data, service control and system-wide startup entries'}">
+                            <Button Style="{StaticResource Btn.Secondary}" Content="{l:T 'Restart as administrator'}" c:Ui.Glyph="&#xEA18;" Command="{Binding RestartElevatedCommand}" Padding="12,6"
+                                    IsEnabled="{Binding IsElevated, Converter={StaticResource Not}}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource Row}" Header="{l:T 'Reset settings'}" Tag="{l:T 'Restore every preference to its default value'}">
+                            <Button Style="{StaticResource Btn.Danger}" Content="{l:T 'Reset'}" Command="{Binding ResetCommand}" Padding="12,6" />
+                        </HeaderedContentControl>
+                    </StackPanel>
+                </Border>
+            </c:AdaptiveGrid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

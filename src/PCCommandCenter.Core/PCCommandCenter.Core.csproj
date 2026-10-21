@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Shared contracts: models, service interfaces, logging, localization and formatting. -->
+  <PropertyGroup>
+    <RootNamespace>PCCommandCenter.Core</RootNamespace>
+  </PropertyGroup>
+</Project>

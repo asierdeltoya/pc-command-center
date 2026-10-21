@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- AI assistant backed by the official Anthropic SDK. -->
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Settings\PCCommandCenter.Settings.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Anthropic" Version="12.59.0" />
+  </ItemGroup>
+</Project>

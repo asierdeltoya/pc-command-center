@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Windows integration: tools launcher, services, event log, startup entries, shell execution. -->
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.EventLog" Version="$(MsExtVersion)" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="$(MsExtVersion)" />
+    <PackageReference Include="System.Management" Version="$(MsExtVersion)" />
+  </ItemGroup>
+</Project>

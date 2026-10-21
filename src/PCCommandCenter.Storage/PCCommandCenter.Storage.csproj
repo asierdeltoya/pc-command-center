@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Disk space analysis and confirmed cleanup operations. -->
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Local settings persistence, DPAPI secret storage and Windows auto-start. -->
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="$(MsExtVersion)" />
+  </ItemGroup>
+</Project>

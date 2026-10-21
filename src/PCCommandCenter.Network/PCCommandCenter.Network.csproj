@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Ping, DNS, traceroute, ARP, interfaces and socket tables. -->
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+  </ItemGroup>
+</Project>

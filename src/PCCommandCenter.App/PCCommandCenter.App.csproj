@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>PCCommandCenter.App</RootNamespace>
+    <AssemblyName>PCCommandCenter</AssemblyName>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyTitle>PC Command Center</AssemblyTitle>
+    <Description>System diagnostics and management suite.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WinForms is only used for the tray icon; avoid its global usings clashing with WPF types. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Settings\PCCommandCenter.Settings.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Hardware\PCCommandCenter.Hardware.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Network\PCCommandCenter.Network.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Storage\PCCommandCenter.Storage.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Processes\PCCommandCenter.Processes.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.WindowsTools\PCCommandCenter.WindowsTools.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.AI\PCCommandCenter.AI.csproj" />
+    <ProjectReference Include="..\PCCommandCenter.Diagnostics\PCCommandCenter.Diagnostics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MsExtVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\logo.png" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,229 @@
+<UserControl x:Class="PCCommandCenter.App.Views.LogAnalyzerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:PCCommandCenter.App.Controls"
+             xmlns:l="clr-namespace:PCCommandCenter.App.Localization"
+             xmlns:vm="clr-namespace:PCCommandCenter.App.ViewModels"
+             xmlns:core="clr-namespace:PCCommandCenter.Core;assembly=PCCommandCenter.Core"
+             AllowDrop="True" Drop="OnDrop" DragEnter="OnDragEnter" DragLeave="OnDragLeave" DragOver="OnDragOver">
+    <Grid Background="Transparent">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="28,4,28,28">
+                <!-- Drop zone -->
+                <Border x:Name="DropZone" CornerRadius="14" BorderThickness="1.5" Padding="24,22" Background="{DynamicResource Brush.Surface}">
+                    <Border.BorderBrush>
+                        <DrawingBrush Viewport="0,0,12,12" ViewportUnits="Absolute" TileMode="Tile">
+                            <DrawingBrush.Drawing>
+                                <GeometryDrawing Brush="{DynamicResource Brush.BorderStrong}">
+                                    <GeometryDrawing.Geometry>
+                                        <GeometryGroup>
+                                            <RectangleGeometry Rect="0,0,6,6" />
+                                            <RectangleGeometry Rect="6,6,6,6" />
+                                        </GeometryGroup>
+                                    </GeometryDrawing.Geometry>
+                                </GeometryDrawing>
+                            </DrawingBrush.Drawing>
+                        </DrawingBrush>
+                    </Border.BorderBrush>
+                    <DockPanel>
+                        <Border Width="52" Height="52" CornerRadius="14" Background="{DynamicResource Brush.AccentSoft}">
+                            <TextBlock Text="&#xE898;" Style="{StaticResource Icon}" FontSize="22" Foreground="{DynamicResource Brush.Accent}" />
+                        </Border>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Style="{StaticResource Btn.Primary}" c:Ui.Glyph="&#xE838;" Content="{l:T 'Choose file…'}" Command="{Binding BrowseCommand}" />
+                        </StackPanel>
+                        <StackPanel Margin="18,0,12,0" VerticalAlignment="Center">
+                            <TextBlock Text="{l:T 'Drop a log file here'}" Style="{StaticResource Text.H2}" />
+                            <TextBlock Style="{StaticResource Text.Secondary}" FontSize="12.5" Margin="0,3,0,0" TextWrapping="Wrap">
+                                <Run Text="{l:T 'Supported:'}" /> <Run Text="{Binding SupportedText, Mode=OneWay}" FontFamily="{StaticResource Font.Mono}" FontSize="11.5" />
+                            </TextBlock>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <TextBlock Text="{l:T 'Try a real Windows log:'}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <Button Style="{StaticResource Btn.Link}" Content="CBS.log" Command="{Binding OpenSampleCommand}" CommandParameter="cbs" Margin="0,0,12,0" />
+                                <Button Style="{StaticResource Btn.Link}" Content="dism.log" Command="{Binding OpenSampleCommand}" CommandParameter="dism" Margin="0,0,12,0" />
+                                <Button Style="{StaticResource Btn.Link}" Content="app.log" Command="{Binding OpenSampleCommand}" CommandParameter="app" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Paste box -->
+                <Expander Margin="0,10,0,0" Foreground="{DynamicResource Brush.TextSecondary}">
+                    <Expander.Header>
+                        <TextBlock Text="{l:T 'Or paste log text'}" Style="{StaticResource Text.Secondary}" FontSize="12.5" />
+                    </Expander.Header>
+                    <DockPanel Margin="0,8,0,0">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Secondary}" Content="{l:T 'Analyze'}" Command="{Binding AnalyzePastedCommand}" VerticalAlignment="Top" Margin="10,0,0,0" />
+                        <TextBox Text="{Binding PasteText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="110" TextWrapping="NoWrap" VerticalContentAlignment="Top"
+                                 FontFamily="{StaticResource Font.Mono}" FontSize="12" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+                    </DockPanel>
+                </Expander>
+
+                <!-- Busy -->
+                <Border Style="{StaticResource Card}" Margin="0,14,0,0" Visibility="{Binding IsBusy, Converter={StaticResource VisibleIf}}">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Secondary}" Content="{l:T 'Cancel'}" Command="{Binding CancelCommand}" />
+                        <ContentControl Style="{StaticResource Spinner}" />
+                        <StackPanel Margin="14,0,14,0">
+                            <TextBlock Style="{StaticResource Text.H3}"><Run Text="{l:T 'Analyzing'}" /> <Run Text="{Binding FileName, Mode=OneWay}" /></TextBlock>
+                            <ProgressBar Value="{Binding Progress, Converter={x:Static c:ProgressToPercent.Instance}}" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Results -->
+                <StackPanel Visibility="{Binding HasResult, Converter={StaticResource VisibleIf}}" Margin="0,18,0,0">
+                    <DockPanel Margin="2,0,0,12">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Style="{StaticResource Btn.Ghost}" c:Ui.Glyph="&#xE8C8;" Content="{l:T 'Copy summary'}" Command="{Binding CopySummaryCommand}" Margin="0,0,6,0" />
+                            <Button Style="{StaticResource Btn.Primary}" c:Ui.Glyph="&#xE99A;" Content="{l:T 'Send to AI'}" Command="{Binding SendToAiCommand}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{Binding FileName}" Style="{StaticResource Text.H2}" />
+                            <TextBlock Text="{Binding FileInfo}" Style="{StaticResource Text.Caption}" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Severity counters -->
+                    <UniformGrid Columns="4">
+                        <Border Style="{StaticResource Card}" Margin="0,0,12,0" Padding="16,12">
+                            <DockPanel>
+                                <Border Width="8" CornerRadius="4" Background="#E11D48" Margin="0,0,12,0" />
+                                <StackPanel><TextBlock Text="{l:T 'CRITICAL'}" Style="{StaticResource Text.Overline}" /><TextBlock Text="{Binding Critical, StringFormat=N0}" Style="{StaticResource Text.Metric}" /></StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}" Margin="0,0,12,0" Padding="16,12">
+                            <DockPanel>
+                                <Border Width="8" CornerRadius="4" Background="{DynamicResource Brush.Danger}" Margin="0,0,12,0" />
+                                <StackPanel><TextBlock Text="{l:T 'ERROR'}" Style="{StaticResource Text.Overline}" /><TextBlock Text="{Binding Errors, StringFormat=N0}" Style="{StaticResource Text.Metric}" /></StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}" Margin="0,0,12,0" Padding="16,12">
+                            <DockPanel>
+                                <Border Width="8" CornerRadius="4" Background="{DynamicResource Brush.Warning}" Margin="0,0,12,0" />
+                                <StackPanel><TextBlock Text="{l:T 'WARNING'}" Style="{StaticResource Text.Overline}" /><TextBlock Text="{Binding Warnings, StringFormat=N0}" Style="{StaticResource Text.Metric}" /></StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}" Padding="16,12">
+                            <DockPanel>
+                                <Border Width="8" CornerRadius="4" Background="{DynamicResource Brush.Info}" Margin="0,0,12,0" />
+                                <StackPanel><TextBlock Text="{l:T 'INFO'}" Style="{StaticResource Text.Overline}" /><TextBlock Text="{Binding Infos, StringFormat=N0}" Style="{StaticResource Text.Metric}" /></StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- Summary -->
+                    <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+                        <DockPanel>
+                            <TextBlock Text="&#xE9D9;" Style="{StaticResource Icon}" VerticalAlignment="Top" Margin="0,2,12,0" Foreground="{DynamicResource Brush.Accent}" />
+                            <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" TextTrimming="None" LineHeight="20" />
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Timeline -->
+                    <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,10">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#E11D48" Margin="0,0,5,0" /><TextBlock Text="{l:T 'Critical'}" Style="{StaticResource Text.Caption}" Margin="0,0,12,0" />
+                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Brush.Danger}" Margin="0,0,5,0" /><TextBlock Text="{l:T 'Error'}" Style="{StaticResource Text.Caption}" Margin="0,0,12,0" />
+                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Brush.Warning}" Margin="0,0,5,0" /><TextBlock Text="{l:T 'Warning'}" Style="{StaticResource Text.Caption}" Margin="0,0,12,0" />
+                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource Brush.Info}" Margin="0,0,5,0" Opacity="0.5" /><TextBlock Text="{l:T 'Info'}" Style="{StaticResource Text.Caption}" />
+                                </StackPanel>
+                                <TextBlock Text="{l:T 'Timeline'}" Style="{StaticResource Text.H2}" />
+                            </DockPanel>
+                            <c:TimelineChart Buckets="{Binding Timeline}" Height="150" Visibility="{Binding HasTimeline, Converter={StaticResource VisibleIf}}" />
+                            <TextBlock Text="{Binding TimelineCaption}" Style="{StaticResource Text.Caption}" Margin="0,6,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Patterns -->
+                    <DockPanel Margin="2,22,0,10">
+                        <TextBlock Text="&#xE9D9;" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding PatternHeadline}" Style="{StaticResource Text.H2}" />
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding Patterns}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate><c:AdaptiveGrid MinColumnWidth="400" MaxColumns="2" Gap="12" /></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type core:LogPattern}">
+                                <Border Style="{StaticResource Card}" Padding="16,14">
+                                    <DockPanel>
+                                        <Border Width="4" CornerRadius="2" Background="{Binding Severity, Converter={StaticResource StatusBrush}}" Margin="0,0,14,0" />
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource Text.H3}" TextWrapping="Wrap" TextTrimming="None" />
+                                            <TextBlock Text="{Binding Explanation}" Style="{StaticResource Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" TextTrimming="None" Margin="0,5,0,0" LineHeight="18" />
+                                            <Border Style="{StaticResource Panel.Inset}" Padding="9,6" Margin="0,9,0,0" Visibility="{Binding Evidence, Converter={StaticResource VisibleIf}}">
+                                                <TextBlock Text="{Binding Evidence}" Style="{StaticResource Text.Mono}" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                            </Border>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Groups -->
+                    <TextBlock Text="{l:T 'Grouped problems'}" Style="{StaticResource Text.H2}" Margin="2,22,0,10" />
+                    <Border Style="{StaticResource Card}" Padding="6,4">
+                        <DataGrid ItemsSource="{Binding Groups}" MaxHeight="360" RowHeight="40">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{l:T 'Count'}" Binding="{Binding Count, StringFormat=N0}" Width="80" FontWeight="SemiBold" />
+                                <DataGridTemplateColumn Header="{l:T 'Severity'}" Width="110" SortMemberPath="Severity">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type vm:LogGroupItem}">
+                                            <ContentControl Style="{StaticResource StatusPill}" Tag="{Binding Severity}" Content="{Binding SeverityText}" HorizontalAlignment="Left" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="{l:T 'Message'}" Binding="{Binding Sample}" Width="4*" ElementStyle="{StaticResource Cell.Mono}" />
+                                <DataGridTextColumn Header="{l:T 'When'}" Binding="{Binding Range}" Width="1.6*" ElementStyle="{StaticResource Cell.Muted}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <!-- Entries -->
+                    <DockPanel Margin="2,22,0,10">
+                        <TextBlock Text="{l:T 'Entries'}" Style="{StaticResource Text.H2}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding EntriesCaption}" Style="{StaticResource Text.Caption}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <ComboBox Width="130" ItemsSource="{x:Static vm:LogAnalyzerViewModel.SeverityFilters}" SelectedItem="{Binding SeverityFilter}" Margin="0,0,10,0">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding Converter={StaticResource Tr}}" /></DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBox Width="260" Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=250}" c:Ui.Glyph="&#xE721;" c:Ui.Placeholder="{l:T 'Search in entries'}" />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Card}" Padding="6,4">
+                        <DataGrid ItemsSource="{Binding Entries}" Height="420" RowHeight="30">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{l:T 'Line'}" Binding="{Binding Line}" Width="70" ElementStyle="{StaticResource Cell.Muted}" />
+                                <DataGridTextColumn Header="{l:T 'Time'}" Binding="{Binding Time}" Width="150" ElementStyle="{StaticResource Cell.Muted}" />
+                                <DataGridTemplateColumn Header="{l:T 'Severity'}" Width="110" SortMemberPath="Severity">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type vm:LogEntryItem}">
+                                            <ContentControl Style="{StaticResource StatusPill}" Tag="{Binding Severity}" Content="{Binding SeverityText}" HorizontalAlignment="Left" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="{l:T 'Message'}" Binding="{Binding Message}" Width="*" ElementStyle="{StaticResource Cell.Mono}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Drag overlay -->
+        <Border Background="{DynamicResource Brush.Overlay}" Visibility="{Binding IsDragOver, Converter={StaticResource VisibleIf}}" IsHitTestVisible="False">
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="16" Padding="34,26" Background="{DynamicResource Brush.Elevated}" BorderBrush="{DynamicResource Brush.Accent}" BorderThickness="2">
+                <StackPanel>
+                    <TextBlock Text="&#xE896;" Style="{StaticResource Icon}" FontSize="30" Foreground="{DynamicResource Brush.Accent}" />
+                    <TextBlock Text="{l:T 'Release to analyze'}" Style="{StaticResource Text.H2}" Margin="0,12,0,0" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

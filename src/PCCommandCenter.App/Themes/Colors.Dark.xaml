@@ -1,0 +1,54 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Accent (overridden at runtime by ThemeService) -->
+    <SolidColorBrush x:Key="Brush.Accent" Color="#7C8CFF" />
+    <SolidColorBrush x:Key="Brush.AccentHover" Color="#9AA6FF" />
+    <SolidColorBrush x:Key="Brush.AccentPressed" Color="#6573E0" />
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#267C8CFF" />
+    <LinearGradientBrush x:Key="Brush.AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#7C8CFF" Offset="0" />
+        <GradientStop Color="#A78BFA" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Surfaces -->
+    <SolidColorBrush x:Key="Brush.Bg" Color="#0A0B0F" />
+    <SolidColorBrush x:Key="Brush.Sidebar" Color="#0D0F14" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="#12151C" />
+    <SolidColorBrush x:Key="Brush.SurfaceHover" Color="#191D27" />
+    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#161A22" />
+    <SolidColorBrush x:Key="Brush.SurfacePressed" Color="#1E2330" />
+    <SolidColorBrush x:Key="Brush.Elevated" Color="#191D27" />
+    <SolidColorBrush x:Key="Brush.Border" Color="#1F2430" />
+    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#2B3242" />
+    <SolidColorBrush x:Key="Brush.Grid" Color="#1A1F29" />
+    <SolidColorBrush x:Key="Brush.Overlay" Color="#B3050609" />
+    <SolidColorBrush x:Key="Brush.Track" Color="#222838" />
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="Brush.Text" Color="#EDF0F5" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#A3ACBC" />
+    <SolidColorBrush x:Key="Brush.TextMuted" Color="#6C7586" />
+    <SolidColorBrush x:Key="Brush.OnAccent" Color="#FFFFFF" />
+
+    <!-- Status -->
+    <SolidColorBrush x:Key="Brush.Success" Color="#34D399" />
+    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="#1F34D399" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="#FBBF24" />
+    <SolidColorBrush x:Key="Brush.WarningSoft" Color="#1FFBBF24" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="#F87171" />
+    <SolidColorBrush x:Key="Brush.DangerSoft" Color="#1FF87171" />
+    <SolidColorBrush x:Key="Brush.Info" Color="#60A5FA" />
+    <SolidColorBrush x:Key="Brush.InfoSoft" Color="#1F60A5FA" />
+
+    <!-- Charts -->
+    <SolidColorBrush x:Key="Brush.Chart.Cpu" Color="#7C8CFF" />
+    <SolidColorBrush x:Key="Brush.Chart.Gpu" Color="#C084FC" />
+    <SolidColorBrush x:Key="Brush.Chart.Ram" Color="#34D399" />
+    <SolidColorBrush x:Key="Brush.Chart.Disk" Color="#FBBF24" />
+    <SolidColorBrush x:Key="Brush.Chart.Rx" Color="#38BDF8" />
+    <SolidColorBrush x:Key="Brush.Chart.Tx" Color="#F472B6" />
+    <SolidColorBrush x:Key="Brush.Chart.Latency" Color="#FB923C" />
+
+    <Color x:Key="Color.Shadow">#000000</Color>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=System.Runtime" x:Key="Shadow.Opacity">0.45</sys:Double>
+</ResourceDictionary>

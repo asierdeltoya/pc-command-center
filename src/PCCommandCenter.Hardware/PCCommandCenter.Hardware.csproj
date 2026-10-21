@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Real-time telemetry: CPU, GPU, memory, disks and network throughput. -->
+  <ItemGroup>
+    <ProjectReference Include="..\PCCommandCenter.Core\PCCommandCenter.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="$(MsExtVersion)" />
+    <PackageReference Include="System.Management" Version="$(MsExtVersion)" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,134 @@
+<UserControl x:Class="PCCommandCenter.App.Views.QuickFixesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:PCCommandCenter.App.Controls"
+             xmlns:l="clr-namespace:PCCommandCenter.App.Localization"
+             xmlns:vm="clr-namespace:PCCommandCenter.App.ViewModels">
+    <Grid Margin="28,4,28,24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <DockPanel>
+            <!-- Intro / restore point -->
+            <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Padding="20,16">
+                <DockPanel>
+                    <Border Width="44" Height="44" CornerRadius="12" Background="{DynamicResource Brush.AccentSoft}">
+                        <TextBlock Text="&#xE90F;" Style="{StaticResource Icon}" FontSize="20" Foreground="{DynamicResource Brush.Accent}" />
+                    </Border>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Secondary}" c:Ui.Glyph="&#xE777;" Content="{l:T 'Create restore point'}" Command="{Binding CreateRestorePointCommand}"
+                            VerticalAlignment="Center" IsEnabled="{Binding AnyRunning, Converter={StaticResource Not}}"
+                            ToolTip="{l:T 'Recommended before repairs that change system settings'}" />
+                    <StackPanel Margin="16,0,16,0" VerticalAlignment="Center">
+                        <TextBlock Text="{l:T 'Repairs and diagnostics for Windows'}" Style="{StaticResource Text.H2}" />
+                        <TextBlock Text="{l:T 'Repairs show exactly which commands they run and ask before doing anything. Diagnostics only read information and run straight away; copy or save their output for a ticket.'}"
+                                   Style="{StaticResource Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" TextTrimming="None" Margin="0,3,0,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Toolbar -->
+            <DockPanel DockPanel.Dock="Top" Margin="0,14,0,0">
+                <ListBox Style="{StaticResource Segmented}" ItemsSource="{x:Static vm:QuickFixesViewModel.Modes}" SelectedItem="{Binding Mode}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate><TextBlock Text="{Binding Converter={StaticResource Tr}}" /></DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBox Width="400" Margin="12,0,0,0" Text="{Binding Search, UpdateSourceTrigger=PropertyChanged, Delay=120}" c:Ui.Glyph="&#xE721;"
+                         c:Ui.Placeholder="{l:T 'Search by problem, tool or command (e.g. wifi, gpupdate, 0x8024)'}" />
+                <TextBlock Text="{Binding CountText}" Style="{StaticResource Text.Secondary}" FontSize="12.5" VerticalAlignment="Center" HorizontalAlignment="Right" />
+            </DockPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,4,0,0">
+                <ItemsControl ItemsSource="{Binding Groups}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:FixGroup}">
+                            <StackPanel Visibility="{Binding IsVisible, Converter={StaticResource VisibleIf}}">
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource Text.H2}" Margin="2,18,0,10" />
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><c:AdaptiveGrid MinColumnWidth="330" MaxColumns="3" Gap="12" /></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemContainerStyle>
+                                        <Style TargetType="ContentPresenter">
+                                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource VisibleIf}}" />
+                                        </Style>
+                                    </ItemsControl.ItemContainerStyle>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:FixItem}">
+                                            <Border Style="{StaticResource Card.Hover}" Padding="16,14">
+                                                <DockPanel>
+                                                    <DockPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                                                        <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Primary}" Padding="14,6" FontSize="12.5" Content="{l:T 'Run'}" c:Ui.Glyph="&#xE768;"
+                                                                Command="{Binding DataContext.RunCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                                IsEnabled="{Binding DataContext.AnyRunning, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource Not}}"
+                                                                ToolTip="{Binding Fix.CommandPreview}" />
+                                                        <WrapPanel VerticalAlignment="Center">
+                                                            <Border Style="{StaticResource Chip}" Margin="0,0,6,0" Background="{DynamicResource Brush.InfoSoft}" BorderThickness="0"
+                                                                    Visibility="{Binding IsReadOnly, Converter={StaticResource VisibleIf}}">
+                                                                <TextBlock FontSize="10.5" Foreground="{DynamicResource Brush.Info}"><Run Text="&#xE7B3;" FontFamily="{StaticResource Font.Icons}" /> <Run Text="{l:T 'Read-only'}" /></TextBlock>
+                                                            </Border>
+                                                            <Border Style="{StaticResource Chip}" Margin="0,0,6,0" Background="{DynamicResource Brush.WarningSoft}" BorderThickness="0"
+                                                                    Visibility="{Binding RequiresAdmin, Converter={StaticResource VisibleIf}}">
+                                                                <TextBlock FontSize="10.5" Foreground="{DynamicResource Brush.Warning}"><Run Text="&#xEA18;" FontFamily="{StaticResource Font.Icons}" /> <Run Text="{l:T 'Admin'}" /></TextBlock>
+                                                            </Border>
+                                                            <Border Style="{StaticResource Chip}" Margin="0,0,6,0" Visibility="{Binding LongRunning, Converter={StaticResource VisibleIf}}">
+                                                                <TextBlock Text="{l:T '10–30 min'}" FontSize="10.5" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                                            </Border>
+                                                            <Border Style="{StaticResource Chip}" Margin="0,0,6,0" Visibility="{Binding RestartRecommended, Converter={StaticResource VisibleIf}}">
+                                                                <TextBlock Text="{l:T 'Needs restart'}" FontSize="10.5" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                                            </Border>
+                                                            <ContentControl Style="{StaticResource Spinner}" Width="16" Height="16" Visibility="{Binding IsRunning, Converter={StaticResource VisibleIf}}" />
+                                                        </WrapPanel>
+                                                    </DockPanel>
+                                                    <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="10" VerticalAlignment="Top" Background="{DynamicResource Brush.SurfaceAlt}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                                                        <TextBlock Text="{Binding Glyph}" Style="{StaticResource Icon}" Foreground="{DynamicResource Brush.Accent}" />
+                                                    </Border>
+                                                    <StackPanel Margin="12,0,0,0">
+                                                        <TextBlock Text="{Binding Title}" Style="{StaticResource Text.H3}" TextWrapping="Wrap" TextTrimming="None" />
+                                                        <TextBlock Text="{Binding Description}" Style="{StaticResource Text.Secondary}" FontSize="12" TextWrapping="Wrap" TextTrimming="None" Margin="0,4,0,0" />
+                                                        <TextBlock Style="{StaticResource Text.Caption}" TextWrapping="Wrap" Margin="0,6,0,0">
+                                                            <Run Text="{l:T 'When to use:'}" FontWeight="SemiBold" /> <Run Text="{Binding Symptoms, Mode=OneWay}" />
+                                                        </TextBlock>
+                                                        <TextBlock Text="{Binding LastResult}" FontSize="11.5" TextWrapping="Wrap" Margin="0,6,0,0" Visibility="{Binding LastResult, Converter={StaticResource VisibleIf}}"
+                                                                   Foreground="{Binding LastSuccess, Converter={StaticResource StatusBrush}}" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- Output panel -->
+        <Border Grid.Column="1" Width="480" Margin="16,0,0,0" Style="{StaticResource Card}" Visibility="{Binding HasOutput, Converter={StaticResource VisibleIf}}">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Style="{StaticResource Btn.Icon}" c:Ui.Glyph="&#xE8C8;" Command="{Binding CopyOutputCommand}" ToolTip="{l:T 'Copy output'}" />
+                        <Button Style="{StaticResource Btn.Icon}" c:Ui.Glyph="&#xE74E;" Command="{Binding SaveOutputCommand}" ToolTip="{l:T 'Save output'}" />
+                        <Button Style="{StaticResource Btn.Icon}" c:Ui.Glyph="&#xE99A;" Command="{Binding AskAiCommand}" ToolTip="{l:T 'Send to AI'}" />
+                        <Button Style="{StaticResource Btn.Icon}" c:Ui.Glyph="&#xE71A;" Command="{Binding CancelCommand}" ToolTip="{l:T 'Cancel'}" Visibility="{Binding AnyRunning, Converter={StaticResource VisibleIf}}" />
+                        <Button Style="{StaticResource Btn.Icon}" c:Ui.Glyph="&#xE711;" Command="{Binding CloseOutputCommand}" ToolTip="{l:T 'Close'}"
+                                Visibility="{Binding AnyRunning, Converter={StaticResource VisibleIf}, ConverterParameter=invert}" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="{l:T 'Output'}" Style="{StaticResource Text.Overline}" />
+                        <TextBlock Text="{Binding OutputTitle}" Style="{StaticResource Text.H3}" TextWrapping="Wrap" TextTrimming="None" />
+                    </StackPanel>
+                </DockPanel>
+                <Border CornerRadius="10" Background="{DynamicResource Brush.Bg}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" c:Ui.AutoScrollTrigger="{Binding Output}" Padding="10">
+                        <TextBox Text="{Binding Output, Mode=OneWay}" IsReadOnly="True" BorderThickness="0" Background="Transparent" Padding="0" TextWrapping="NoWrap"
+                                 FontFamily="{StaticResource Font.Mono}" FontSize="11.5" VerticalContentAlignment="Top" />
+                    </ScrollViewer>
+                </Border>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>
